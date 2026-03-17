@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forte Set Class Atlas</title>
+  <style>
+    :root {
+      --bg1: #f8fafc;
+      --bg2: #dbeafe;
+      --card: rgba(255,255,255,0.92);
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --accent: #0f172a;
+      --accent2: #1d4ed8;
+      --pill: #e2e8f0;
+      --shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1440px; margin: 0 auto; padding: 22px; }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.6);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+    .hero { padding: 28px; margin-bottom: 20px; }
+    .badges { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+    .badge {
+      background: var(--pill);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    h1 { font-size: clamp(28px, 4vw, 42px); margin: 10px 0; }
+    h2 { margin: 0 0 14px; font-size: 22px; }
+    .sub, .tiny { color: var(--muted); line-height: 1.6; }
+    .tiny { font-size: 12px; }
+    .layout { display:grid; grid-template-columns: 360px 1fr; gap:20px; }
+    .stack { display:grid; gap:20px; }
+    .card { padding: 20px; }
+    .label { font-size: 14px; color: var(--muted); margin-bottom: 8px; display:block; }
+    input[type="text"], select {
+      width: 100%; border:1px solid var(--line); border-radius:16px; padding:12px 14px;
+      font-size:15px; background:white; color:var(--text);
+    }
+    button {
+      border: 1px solid var(--line); background: white; border-radius: 16px; padding: 10px 14px;
+      font-size: 14px; cursor: pointer; color: var(--text); transition: .18s ease;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(15,23,42,.08); }
+    button.primary { background: var(--accent); color:white; border-color: var(--accent); }
+    .row { display:flex; gap:10px; flex-wrap:wrap; }
+    .info-list { display:grid; gap:10px; font-size:15px; }
+    .info-item strong { display:inline-block; min-width:144px; }
+    .split { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:20px; }
+    .tri { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:20px; }
+    .svg-wrap { display:flex; justify-content:center; align-items:center; }
+    .metric { margin-bottom: 16px; }
+    .metric-head { display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; }
+    .track { height:12px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+    .fill { height:100%; background: linear-gradient(90deg, #1d4ed8, #0f172a); border-radius:999px; }
+    .bars { display:grid; gap:14px; }
+    .bar-row { display:grid; grid-template-columns:44px 1fr 36px; gap:12px; align-items:center; }
+    .bar-track { background:#e2e8f0; border-radius:999px; height:24px; overflow:hidden; }
+    .bar-fill { background: linear-gradient(90deg, #60a5fa, #1e3a8a); height:100%; border-radius:999px; }
+    .table-wrap { overflow:auto; max-height:420px; border:1px solid var(--line); border-radius:18px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; white-space:nowrap; }
+    thead th { position:sticky; top:0; background:#eff6ff; z-index:1; }
+    tr.active-row { background:#dbeafe; }
+    .zlist, .atlas-grid, .keyboard { display:grid; gap:10px; }
+    .zitem, .atlas-cell {
+      border:1px solid var(--line); border-radius:18px; padding:12px; background: rgba(255,255,255,0.82);
+    }
+    .atlas-grid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+    .keyboard {
+      grid-template-columns: repeat(12, minmax(0,1fr));
+    }
+    .key {
+      padding:14px 6px; text-align:center; border-radius:16px; border:1px solid var(--line);
+      background:white; cursor:pointer; font-weight:600; user-select:none;
+    }
+    .key.active { background:#0f172a; color:white; }
+    .panel-title { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: 1fr; }
+      .split, .tri { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="badges">
+        <span class="badge">Forte Set Class Atlas</span>
+        <span class="badge">224 set classes</span>
+        <span class="badge">IV map + Z relation + MIDI</span>
+        <span class="badge">Single HTML</span>
+      </div>
+      <h1>Post-tonal Atlas</h1>
+      <div class="sub">
+        pitch-class 集合を入力すると、prime form / interval vector / 224 set class データベース検索 / Z-relation 完全探索 / IV 2D・疑似3Dマップ / 鍵盤入力 / MIDI入力を一体化して表示します。
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="stack">
+        <div class="card">
+          <h2>入力</h2>
+          <label class="label" for="pcInput">Pitch classes</label>
+          <input id="pcInput" type="text" value="0 1 4 7" placeholder="例: 0 1 4 7 / 0,2,4,6 / T E 0 4" />
+          <div class="row" style="margin-top:12px;">
+            <button data-preset="0 4 7">Major</button>
+            <button data-preset="0 3 7">Minor</button>
+            <button data-preset="0 3 6 9">Dim7</button>
+            <button data-preset="0 2 4 6">WT tet.</button>
+            <button data-preset="0 1 2 3">Cluster</button>
+            <button data-preset="0 2 4 6 8 10">Whole-tone</button>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <button class="primary" id="analyzeBtn">解析</button>
+            <button id="playChordBtn">和音</button>
+            <button id="playArpeggioBtn">アルペジオ</button>
+            <button id="stopAudioBtn">停止</button>
+            <button id="clearBtn">クリア</button>
+            <button id="resetBtn">初期値</button>
+          </div>
+          <div class="tiny" style="margin-top:10px;">C4基準で再生します。MIDI入力に対応しているブラウザでは外部MIDIキーボードからも入力できます。</div>
+        </div>
+
+        <div class="card">
+          <div class="panel-title"><h2>MIDI / 鍵盤入力</h2><span class="tiny" id="midiStatus">MIDI: 未接続</span></div>
+          <div class="keyboard" id="pcKeyboard"></div>
+          <div class="tiny" style="margin-top:10px;">12鍵をクリックすると集合へ追加・削除します。外部MIDI入力があれば note on を pitch class に変換して反映します。</div>
+        </div>
+
+        <div class="card">
+          <h2>集合情報</h2>
+          <div class="info-list" id="infoList"></div>
+        </div>
+
+        <div class="card">
+          <h2>検索</h2>
+          <label class="label" for="forteSearch">Forte / prime form 検索</label>
+          <input id="forteSearch" type="text" placeholder="例: 4-21 / (0,2,4,6) / whole" />
+          <div class="tiny" style="margin-top:8px;">224 set class から絞り込みます。現在選択中の集合は表でハイライトされます。</div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="split">
+          <div class="card">
+            <h2>Pitch-class clock</h2>
+            <div class="svg-wrap"><svg id="clockSvg" viewBox="0 0 300 300" width="320" height="320"></svg></div>
+          </div>
+          <div class="card">
+            <h2>簡易キャラクター軸</h2>
+            <div id="metrics"></div>
+            <div class="tiny">interval vector の分布から、roughness / openness / symmetry を近似します。</div>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h2>Interval vector</h2>
+            <div id="ivBadges" class="row" style="margin-bottom:16px;"></div>
+            <div id="bars" class="bars"></div>
+          </div>
+          <div class="card">
+            <h2>C4基準の譜面</h2>
+            <div class="svg-wrap"><svg id="staffSvg" viewBox="0 0 760 220" width="100%" height="220"></svg></div>
+          </div>
+        </div>
+
+        <div class="tri">
+          <div class="card">
+            <h2>IV 2D map</h2>
+            <div class="svg-wrap"><svg id="iv2dSvg" viewBox="0 0 360 280" width="100%" height="280"></svg></div>
+            <div class="tiny">x = chromatic density, y = open interval density</div>
+          </div>
+          <div class="card">
+            <h2>IV pseudo-3D</h2>
+            <div class="svg-wrap"><svg id="iv3dSvg" viewBox="0 0 360 280" width="100%" height="280"></svg></div>
+            <div class="tiny">z を奥行き風に投影した疑似3D表示</div>
+          </div>
+          <div class="card">
+            <h2>Forte orbit map</h2>
+            <div class="svg-wrap"><svg id="forte3dSvg" viewBox="0 0 360 280" width="100%" height="280"></svg></div>
+            <div class="tiny">cardinality / symmetry / tension をもとに配置した atlas 風マップ</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>224 Forte set class DB</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Forte</th><th>Prime form</th><th>Card.</th><th>IV</th><th>Z</th></tr>
+              </thead>
+              <tbody id="dbTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h2>Z-relation 完全探索</h2>
+            <div id="zList" class="zlist"></div>
+          </div>
+          <div class="card">
+            <h2>Atlas neighbors</h2>
+            <div id="atlasGrid" class="atlas-grid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const mod = (n, m) => ((n % m) + m) % m;
+    const NOTE_NAMES = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+    let audioCtx = null;
+    let activeOscillators = [];
+    let audioStopTimer = null;
+    let midiAccess = null;
+    let currentDB = [];
+
+    function uniqueSorted(arr) {
+      return [...new Set(arr.map((n) => mod(Number(n), 12)))].sort((a, b) => a - b);
+    }
+
+    function parsePitchClasses(text) {
+      if (!text.trim()) return [];
+      return uniqueSorted(text.split(/[ ,，、]+/).map((s) => s.trim()).filter(Boolean).map((s) => {
+        const upper = s.toUpperCase();
+        if (upper === 'T') return 10;
+        if (upper === 'E') return 11;
+        const n = Number(upper);
+        return Number.isFinite(n) ? n : NaN;
+      }).filter((n) => Number.isFinite(n)));
+    }
+
+    function rotate(arr, i) { return arr.slice(i).concat(arr.slice(0, i)); }
+    function normalizeRotation(rot) { const base = rot[0]; return rot.map((x) => mod(x - base, 12)); }
+    function comparePacked(a, b) {
+      const spanA = a[a.length - 1], spanB = b[b.length - 1];
+      if (spanA !== spanB) return spanA - spanB;
+      for (let i = a.length - 2; i >= 0; i--) if (a[i] !== b[i]) return a[i] - b[i];
+      return 0;
+    }
+    function normalOrder(set) {
+      if (set.length <= 1) return [...set];
+      const rots = set.map((_, i) => normalizeRotation(rotate(set, i)));
+      rots.sort(comparePacked);
+      return rots[0];
+    }
+    function invertSet(set) { return uniqueSorted(set.map((x) => mod(-x, 12))); }
+    function transposeToZero(arr) { if (!arr.length) return []; const f = arr[0]; return arr.map((x) => mod(x - f, 12)); }
+    function lexicographicCompare(a, b) {
+      const len = Math.max(a.length, b.length);
+      for (let i = 0; i < len; i++) {
+        const av = a[i] ?? Infinity, bv = b[i] ?? Infinity;
+        if (av !== bv) return av - bv;
+      }
+      return 0;
+    }
+    function primeForm(set) {
+      if (!set.length) return [];
+      const no = transposeToZero(normalOrder(set));
+      const inv = transposeToZero(normalOrder(invertSet(set)));
+      return lexicographicCompare(no, inv) <= 0 ? no : inv;
+    }
+    function intervalVector(set) {
+      const vec = [0, 0, 0, 0, 0, 0];
+      for (let i = 0; i < set.length; i++) {
+        for (let j = i + 1; j < set.length; j++) {
+          const d = mod(set[j] - set[i], 12);
+          const ic = Math.min(d, 12 - d);
+          if (ic >= 1 && ic <= 6) vec[ic - 1] += 1;
+        }
+      }
+      return vec;
+    }
+    function complement(set) {
+      const s = new Set(set);
+      return Array.from({ length: 12 }, (_, i) => i).filter((n) => !s.has(n));
+    }
+    function formatSet(arr) { return '{' + arr.join(', ') + '}'; }
+    function formatPrime(arr) { return '(' + arr.join(',') + ')'; }
+    function pfKey(arr) { return JSON.stringify(arr); }
+    function ivKey(arr) { return JSON.stringify(arr); }
+    function subsetsOfSize(arr, k) {
+      const result = [], path = [];
+      function walk(start) {
+        if (path.length === k) { result.push([...path]); return; }
+        for (let i = start; i < arr.length; i++) { path.push(arr[i]); walk(i + 1); path.pop(); }
+      }
+      walk(0); return result;
+    }
+
+    function buildForteDatabase() {
+      const db = [];
+      for (let n = 1; n <= 11; n++) {
+        const all = subsetsOfSize(Array.from({ length: 12 }, (_, i) => i), n);
+        const primeMap = new Map();
+        all.forEach((set) => {
+          const pf = primeForm(set);
+          const key = pfKey(pf);
+          if (!primeMap.has(key)) primeMap.set(key, { primeForm: pf, iv: intervalVector(set), card: n, examples: [set] });
+        });
+        const rows = [...primeMap.values()].sort((a, b) => lexicographicCompare(a.primeForm, b.primeForm));
+        rows.forEach((row, idx) => {
+          row.forte = `${n}-${idx + 1}`;
+          row.zMates = [];
+          row.chr = row.iv[0] + row.iv[1];
+          row.open = row.iv[3] + row.iv[4] + row.iv[5];
+          row.sym = symmetryScoreFromSet(row.primeForm, row.iv);
+          db.push(row);
+        });
+      }
+      db.forEach((row) => {
+        row.zMates = db.filter((other) => other.card === row.card && ivKey(other.iv) === ivKey(row.iv) && pfKey(other.primeForm) !== pfKey(row.primeForm)).map((x) => x.forte);
+      });
+      return db;
+    }
+
+    function symmetryScoreFromSet(set, iv) {
+      const diff = Math.abs(iv[0]-iv[4]) + Math.abs(iv[1]-iv[3]) + Math.abs((set.length % 2)-0.5);
+      return Math.max(0, Math.min(100, 100 - Math.round(diff * 14)));
+    }
+
+    function pcClockPositions(radius = 120) {
+      return Array.from({ length: 12 }, (_, i) => {
+        const angle = (Math.PI * 2 * i) / 12 - Math.PI / 2;
+        return { pc: i, x: 150 + radius * Math.cos(angle), y: 150 + radius * Math.sin(angle) };
+      });
+    }
+
+    function renderClock(selected) {
+      const svg = document.getElementById('clockSvg'); svg.innerHTML = '';
+      const selectedSet = new Set(selected), pos = pcClockPositions();
+      const ns = 'http://www.w3.org/2000/svg';
+      const ring = document.createElementNS(ns, 'circle');
+      ring.setAttribute('cx',150); ring.setAttribute('cy',150); ring.setAttribute('r',120); ring.setAttribute('fill','none'); ring.setAttribute('stroke','#334155'); ring.setAttribute('stroke-opacity','0.2'); ring.setAttribute('stroke-width','2'); svg.appendChild(ring);
+      pos.forEach((p) => {
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1',150); line.setAttribute('y1',150); line.setAttribute('x2',p.x); line.setAttribute('y2',p.y); line.setAttribute('stroke','#64748b'); line.setAttribute('stroke-opacity','0.15'); svg.appendChild(line);
+        const circle = document.createElementNS(ns, 'circle');
+        circle.setAttribute('cx',p.x); circle.setAttribute('cy',p.y); circle.setAttribute('r',selectedSet.has(p.pc)?18:14); circle.setAttribute('fill',selectedSet.has(p.pc)?'#0f172a':'transparent'); circle.setAttribute('fill-opacity',selectedSet.has(p.pc)?'0.95':'0'); circle.setAttribute('stroke','#334155'); circle.setAttribute('stroke-opacity','0.65'); svg.appendChild(circle);
+        const text = document.createElementNS(ns, 'text');
+        text.setAttribute('x',p.x); text.setAttribute('y',p.y+5); text.setAttribute('text-anchor','middle'); text.setAttribute('font-size','14'); text.setAttribute('font-weight','600'); text.setAttribute('fill',selectedSet.has(p.pc)?'white':'#0f172a'); text.textContent = String(p.pc); svg.appendChild(text);
+      });
+    }
+
+    function pitchClassToStaffInfo(pc) {
+      const map = {
+        0:{name:'C',accidental:'',diatonicIndex:0},1:{name:'C',accidental:'♯',diatonicIndex:0},2:{name:'D',accidental:'',diatonicIndex:1},3:{name:'D',accidental:'♯',diatonicIndex:1},4:{name:'E',accidental:'',diatonicIndex:2},5:{name:'F',accidental:'',diatonicIndex:3},6:{name:'F',accidental:'♯',diatonicIndex:3},7:{name:'G',accidental:'',diatonicIndex:4},8:{name:'G',accidental:'♯',diatonicIndex:4},9:{name:'A',accidental:'',diatonicIndex:5},10:{name:'A',accidental:'♯',diatonicIndex:5},11:{name:'B',accidental:'',diatonicIndex:6}
+      };
+      return map[pc];
+    }
+    function midiToStaffY(midi) {
+      const pc = mod(midi, 12), octave = Math.floor(midi / 12) - 1, info = pitchClassToStaffInfo(pc);
+      const c4Y = 170;
+      const staffStepOffset = (octave - 4) * 7 + info.diatonicIndex;
+      return c4Y - staffStepOffset * 10;
+    }
+    function staffLedgerLinesForY(y) {
+      const lines = [];
+      if (y > 150) for (let ledgerY = 170; ledgerY <= y; ledgerY += 20) lines.push(ledgerY);
+      if (y < 70) for (let ledgerY = 50; ledgerY >= y; ledgerY -= 20) lines.push(ledgerY);
+      return lines;
+    }
+    function renderStaffNotation(pcs) {
+      const svg = document.getElementById('staffSvg'); if (!svg) return; svg.innerHTML = '';
+      const ns = 'http://www.w3.org/2000/svg'; const left=90, right=700, lineYs=[70,90,110,130,150];
+      lineYs.forEach((y) => { const line = document.createElementNS(ns,'line'); line.setAttribute('x1',left); line.setAttribute('x2',right); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','#334155'); line.setAttribute('stroke-width','1.5'); svg.appendChild(line); });
+      const clef = document.createElementNS(ns,'text'); clef.setAttribute('x',38); clef.setAttribute('y',132); clef.setAttribute('font-size','64'); clef.setAttribute('fill','#0f172a'); clef.textContent='𝄞'; svg.appendChild(clef);
+      const sorted = [...pcs].sort((a,b)=>a-b);
+      sorted.forEach((pc,index) => {
+        const midi = 60 + pc, info = pitchClassToStaffInfo(pc), y = midiToStaffY(midi), x = 150 + index * 62;
+        const note = document.createElementNS(ns,'ellipse'); note.setAttribute('cx',x); note.setAttribute('cy',y); note.setAttribute('rx',11); note.setAttribute('ry',8); note.setAttribute('transform',`rotate(-20 ${x} ${y})`); note.setAttribute('fill','#0f172a'); svg.appendChild(note);
+        const stem = document.createElementNS(ns,'line'); stem.setAttribute('x1',x+9); stem.setAttribute('x2',x+9); stem.setAttribute('y1',y); stem.setAttribute('y2',y-36); stem.setAttribute('stroke','#0f172a'); stem.setAttribute('stroke-width','1.5'); svg.appendChild(stem);
+        if (info.accidental) { const acc = document.createElementNS(ns,'text'); acc.setAttribute('x',x-24); acc.setAttribute('y',y+5); acc.setAttribute('font-size','22'); acc.textContent=info.accidental; svg.appendChild(acc); }
+        staffLedgerLinesForY(y).forEach((ledgerY) => { const l = document.createElementNS(ns,'line'); l.setAttribute('x1',x-16); l.setAttribute('x2',x+16); l.setAttribute('y1',ledgerY); l.setAttribute('y2',ledgerY); l.setAttribute('stroke','#334155'); l.setAttribute('stroke-width','1.5'); svg.appendChild(l); });
+        const label = document.createElementNS(ns,'text'); label.setAttribute('x',x); label.setAttribute('y',205); label.setAttribute('text-anchor','middle'); label.setAttribute('font-size','12'); label.setAttribute('fill','#475569'); label.textContent=`${NOTE_NAMES[pc]}4`; svg.appendChild(label);
+      });
+    }
+
+    function pcToMidi(pc, baseMidi = 60) { return baseMidi + pc; }
+    function midiToFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+    function stopAudio() {
+      if (audioStopTimer) { clearTimeout(audioStopTimer); audioStopTimer = null; }
+      activeOscillators.forEach((node) => {
+        try {
+          node.gain.gain.cancelScheduledValues(audioCtx.currentTime);
+          node.gain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.08);
+          node.osc.stop(audioCtx.currentTime + 0.2);
+        } catch (e) {}
+      });
+      activeOscillators = [];
+    }
+    async function ensureAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+      return audioCtx;
+    }
+    async function playPitchClassChord() {
+      const pcs = parsePitchClasses(document.getElementById('pcInput').value); if (!pcs.length) return;
+      await ensureAudioContext(); stopAudio(); const now = audioCtx.currentTime;
+      const master = audioCtx.createGain(); master.gain.setValueAtTime(0.0001, now); master.gain.linearRampToValueAtTime(0.18, now + 0.06); master.gain.exponentialRampToValueAtTime(0.12, now + 0.5); master.connect(audioCtx.destination);
+      pcs.forEach((pc, idx) => {
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = idx % 2 === 0 ? 'triangle' : 'sine'; osc.frequency.setValueAtTime(midiToFreq(pcToMidi(pc, 60)), now);
+        gain.gain.setValueAtTime(0.0001, now); gain.gain.linearRampToValueAtTime(0.12 / Math.max(1, pcs.length), now + 0.04); gain.gain.exponentialRampToValueAtTime(0.08 / Math.max(1, pcs.length), now + 0.4);
+        osc.connect(gain); gain.connect(master); osc.start(now); activeOscillators.push({ osc, gain });
+      });
+      audioStopTimer = setTimeout(() => { try { stopAudio(); } catch (e) {} }, 2200);
+    }
+    async function playPitchClassArpeggio() {
+      const pcs = parsePitchClasses(document.getElementById('pcInput').value); if (!pcs.length) return;
+      await ensureAudioContext(); stopAudio(); const now = audioCtx.currentTime, noteDur = 0.42, gap = 0.3;
+      const master = audioCtx.createGain(); master.gain.setValueAtTime(0.16, now); master.connect(audioCtx.destination);
+      pcs.forEach((pc, idx) => {
+        const start = now + idx * gap, end = start + noteDur;
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = idx % 2 === 0 ? 'triangle' : 'sine'; osc.frequency.setValueAtTime(midiToFreq(pcToMidi(pc, 60)), start);
+        gain.gain.setValueAtTime(0.0001, start); gain.gain.linearRampToValueAtTime(0.11, start + 0.03); gain.gain.exponentialRampToValueAtTime(0.05, end - 0.05); gain.gain.exponentialRampToValueAtTime(0.0001, end);
+        osc.connect(gain); gain.connect(master); osc.start(start); osc.stop(end + 0.02); activeOscillators.push({ osc, gain });
+      });
+      const totalMs = Math.ceil((pcs.length * gap + noteDur) * 1000) + 120;
+      audioStopTimer = setTimeout(() => { try { stopAudio(); } catch (e) {} }, totalMs);
+    }
+
+    function zRelationMatchesByPF(pf) {
+      const row = currentDB.find((r) => pfKey(r.primeForm) === pfKey(pf));
+      if (!row) return [];
+      return currentDB.filter((r) => r.card === row.card && ivKey(r.iv) === ivKey(row.iv) && pfKey(r.primeForm) !== pfKey(pf));
+    }
+
+    function renderIV2D(iv, pf) {
+      const svg = document.getElementById('iv2dSvg'); svg.innerHTML = ''; const ns='http://www.w3.org/2000/svg';
+      const width=360, height=280, pad=36;
+      const xVal = iv[0] + iv[1] * 0.8;
+      const yVal = iv[3] + iv[4] + iv[5] * 1.1;
+      const max = Math.max(1, ...currentDB.map((r) => Math.max(r.chr, r.open)));
+      const x = pad + (xVal / max) * (width - pad * 2);
+      const y = height - pad - (yVal / max) * (height - pad * 2);
+      [['x', pad, height-pad, width-pad, height-pad], ['y', pad, height-pad, pad, pad]].forEach((a) => { const l = document.createElementNS(ns,'line'); l.setAttribute('x1',a[1]); l.setAttribute('y1',a[2]); l.setAttribute('x2',a[3]); l.setAttribute('y2',a[4]); l.setAttribute('stroke','#64748b'); svg.appendChild(l); });
+      currentDB.slice(0, 224).forEach((row) => {
+        const cx = pad + (row.chr / max) * (width - pad * 2);
+        const cy = height - pad - (row.open / max) * (height - pad * 2);
+        const c = document.createElementNS(ns,'circle'); c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',2.8); c.setAttribute('fill','#93c5fd'); svg.appendChild(c);
+      });
+      const p = document.createElementNS(ns,'circle'); p.setAttribute('cx',x); p.setAttribute('cy',y); p.setAttribute('r',8); p.setAttribute('fill','#1d4ed8'); svg.appendChild(p);
+      const t = document.createElementNS(ns,'text'); t.setAttribute('x',x + 10); t.setAttribute('y',y - 10); t.setAttribute('font-size','12'); t.textContent = formatPrime(pf); svg.appendChild(t);
+    }
+
+    function renderIV3D(iv, pf) {
+      const svg = document.getElementById('iv3dSvg'); svg.innerHTML=''; const ns='http://www.w3.org/2000/svg';
+      const width=360, height=280, cx0=60, cy0=220;
+      function project(x,y,z){ return { x: cx0 + x*18 + z*10, y: cy0 - y*16 - z*8 }; }
+      const axes=[[0,0,0,10,0,0],[0,0,0,0,10,0],[0,0,0,0,0,10]];
+      axes.forEach((a)=>{ const p1=project(a[0],a[1],a[2]), p2=project(a[3],a[4],a[5]); const l=document.createElementNS(ns,'line'); l.setAttribute('x1',p1.x); l.setAttribute('y1',p1.y); l.setAttribute('x2',p2.x); l.setAttribute('y2',p2.y); l.setAttribute('stroke','#64748b'); svg.appendChild(l); });
+      currentDB.forEach((row)=>{ const p=project(row.chr,row.open,row.card); const c=document.createElementNS(ns,'circle'); c.setAttribute('cx',p.x); c.setAttribute('cy',p.y); c.setAttribute('r',2.2); c.setAttribute('fill','#bfdbfe'); svg.appendChild(c); });
+      const p=project(iv[0]+iv[1]*0.8, iv[3]+iv[4]+iv[5]*1.1, pf.length); const dot=document.createElementNS(ns,'circle'); dot.setAttribute('cx',p.x); dot.setAttribute('cy',p.y); dot.setAttribute('r',8); dot.setAttribute('fill','#1d4ed8'); svg.appendChild(dot);
+      const text=document.createElementNS(ns,'text'); text.setAttribute('x',p.x+10); text.setAttribute('y',p.y-10); text.setAttribute('font-size','12'); text.textContent=formatPrime(pf); svg.appendChild(text);
+    }
+
+    function renderForteOrbitMap(pf, iv) {
+      const svg = document.getElementById('forte3dSvg'); svg.innerHTML=''; const ns='http://www.w3.org/2000/svg'; const width=360, height=280, cx=180, cy=140;
+      currentDB.forEach((row, i)=>{
+        const angle = (i / currentDB.length) * Math.PI * 2;
+        const r = 20 + row.card * 14 + (100 - row.sym) * 0.15;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r * 0.6 - row.chr * 1.2;
+        const c = document.createElementNS(ns,'circle'); c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',2.4); c.setAttribute('fill','#93c5fd'); svg.appendChild(c);
+      });
+      const row = currentDB.find((r)=>pfKey(r.primeForm)===pfKey(pf));
+      if (row) {
+        const idx = currentDB.indexOf(row); const angle = (idx / currentDB.length) * Math.PI * 2; const r = 20 + row.card * 14 + (100 - row.sym) * 0.15; const x = cx + Math.cos(angle) * r; const y = cy + Math.sin(angle) * r * 0.6 - row.chr * 1.2;
+        const c = document.createElementNS(ns,'circle'); c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',9); c.setAttribute('fill','#1d4ed8'); svg.appendChild(c);
+        const t = document.createElementNS(ns,'text'); t.setAttribute('x',x+10); t.setAttribute('y',y-10); t.setAttribute('font-size','12'); t.textContent=row.forte; svg.appendChild(t);
+      }
+    }
+
+    function renderKeyboard(selected) {
+      const el = document.getElementById('pcKeyboard');
+      el.innerHTML = NOTE_NAMES.map((n, pc) => `<div class="key ${selected.includes(pc) ? 'active' : ''}" data-pc="${pc}">${n}<br><span class="tiny">${pc}</span></div>`).join('');
+      el.querySelectorAll('.key').forEach((key) => key.addEventListener('click', () => {
+        const pc = Number(key.dataset.pc);
+        const pcs = parsePitchClasses(document.getElementById('pcInput').value);
+        const set = new Set(pcs);
+        if (set.has(pc)) set.delete(pc); else set.add(pc);
+        document.getElementById('pcInput').value = [...set].sort((a,b)=>a-b).join(' ');
+        renderApp();
+      }));
+    }
+
+    function renderDBTable(activePF) {
+      const q = document.getElementById('forteSearch').value.trim().toLowerCase();
+      const body = document.getElementById('dbTableBody');
+      const rows = currentDB.filter((row) => {
+        if (!q) return true;
+        const blob = [row.forte, formatPrime(row.primeForm), row.card, row.iv.join(' '), row.zMates.join(' ')].join(' ').toLowerCase();
+        return blob.includes(q);
+      });
+      body.innerHTML = rows.map((row) => `
+        <tr class="${pfKey(row.primeForm) === pfKey(activePF) ? 'active-row' : ''}" data-forte="${row.forte}">
+          <td>${row.forte}</td>
+          <td class="mono">${formatPrime(row.primeForm)}</td>
+          <td>${row.card}</td>
+          <td class="mono">&lt;${row.iv.join('')} &gt;</td>
+          <td>${row.zMates.join(', ') || '—'}</td>
+        </tr>
+      `).join('');
+      body.querySelectorAll('tr').forEach((tr) => tr.addEventListener('click', () => {
+        const forte = tr.dataset.forte;
+        const row = currentDB.find((r) => r.forte === forte);
+        if (row) {
+          document.getElementById('pcInput').value = row.primeForm.join(' ');
+          renderApp();
+        }
+      }));
+    }
+
+    function renderAtlasNeighbors(pf, iv) {
+      const atlas = document.getElementById('atlasGrid');
+      const row = currentDB.find((r) => pfKey(r.primeForm) === pfKey(pf));
+      if (!row) { atlas.innerHTML = '<div class="tiny">一致する set class がありません。</div>'; return; }
+      const neighbors = currentDB
+        .filter((r) => r.forte !== row.forte)
+        .map((r) => ({ ...r, dist: r.iv.reduce((acc, v, i) => acc + Math.abs(v - row.iv[i]), 0) + Math.abs(r.card - row.card) }))
+        .sort((a,b) => a.dist - b.dist)
+        .slice(0, 8);
+      atlas.innerHTML = [`<div class="atlas-cell"><strong>Current</strong><div>${row.forte}</div><div class="mono">${formatPrime(row.primeForm)}</div></div>`]
+        .concat(neighbors.map((n) => `<div class="atlas-cell"><strong>${n.forte}</strong><div class="mono">${formatPrime(n.primeForm)}</div><div>IV &lt;${n.iv.join('')}&gt;</div></div>`)).join('');
+    }
+
+    async function initMIDI() {
+      if (!navigator.requestMIDIAccess) {
+        document.getElementById('midiStatus').textContent = 'MIDI: 非対応ブラウザ';
+        return;
+      }
+      try {
+        midiAccess = await navigator.requestMIDIAccess();
+        const inputs = [...midiAccess.inputs.values()];
+        document.getElementById('midiStatus').textContent = inputs.length ? `MIDI: ${inputs.length}入力` : 'MIDI: 接続待ち';
+        inputs.forEach((input) => {
+          input.onmidimessage = (event) => {
+            const [status, note, velocity] = event.data;
+            const command = status & 0xf0;
+            if (command === 0x90 && velocity > 0) {
+              const pc = mod(note, 12);
+              const pcs = parsePitchClasses(document.getElementById('pcInput').value);
+              const set = new Set(pcs); set.add(pc);
+              document.getElementById('pcInput').value = [...set].sort((a,b)=>a-b).join(' ');
+              renderApp();
+            }
+          };
+        });
+      } catch (e) {
+        document.getElementById('midiStatus').textContent = 'MIDI: 接続失敗';
+      }
+    }
+
+    function renderApp() {
+      const pcs = parsePitchClasses(document.getElementById('pcInput').value);
+      const pf = primeForm(pcs), iv = intervalVector(pcs), no = normalOrder(pcs), comp = complement(pcs);
+      const row = currentDB.find((r) => pfKey(r.primeForm) === pfKey(pf));
+      const zMates = zRelationMatchesByPF(pf);
+      const info = [
+        ['入力集合', formatSet(pcs)],
+        ['Cardinality', String(pcs.length)],
+        ['Normal order', formatPrime(no)],
+        ['Prime form', formatPrime(pf)],
+        ['Forteラベル', row ? row.forte : '—'],
+        ['Complement', formatSet(comp)],
+        ['Z-mates', zMates.map((z) => z.forte).join(', ') || '—']
+      ];
+      document.getElementById('infoList').innerHTML = info.map(([k,v]) => `<div class="info-item"><strong>${k}:</strong> <span>${v}</span></div>`).join('');
+      renderClock(pcs); renderStaffNotation(pcs); renderKeyboard(pcs);
+
+      const tension = iv[0] * 2 + iv[1] * 1.5 + iv[5] * 1.2;
+      const consonant = iv[2] * 1.2 + iv[3] * 1.6 + iv[4] * 1.1;
+      const symmetry = symmetryScoreFromSet(pf, iv);
+      const roughnessScore = Math.min(100, Math.round((tension / Math.max(1, pcs.length)) * 18));
+      const opennessScore = Math.min(100, Math.round((consonant / Math.max(1, pcs.length)) * 20));
+      const metrics = [['緊張 / roughness', roughnessScore], ['開放 / openness', opennessScore], ['対称 / symmetry', symmetry]];
+      document.getElementById('metrics').innerHTML = metrics.map(([label,value]) => `<div class="metric"><div class="metric-head"><span>${label}</span><strong>${value}</strong></div><div class="track"><div class="fill" style="width:${value}%"></div></div></div>`).join('');
+      document.getElementById('ivBadges').innerHTML = iv.map((v,i) => `<span class="badge">ic${i+1}: ${v}</span>`).join('');
+      const maxV = Math.max(1, ...iv);
+      document.getElementById('bars').innerHTML = iv.map((v,i) => `<div class="bar-row"><strong>ic${i+1}</strong><div class="bar-track"><div class="bar-fill" style="width:${(v/maxV)*100}%"></div></div><span>${v}</span></div>`).join('');
+      document.getElementById('zList').innerHTML = zMates.length ? zMates.map((z) => `<div class="zitem"><strong>${z.forte}</strong><div class="mono">${formatPrime(z.primeForm)}</div><div>IV &lt;${z.iv.join('')}&gt;</div></div>`).join('') : '<div class="tiny">Z-relation は見つかりません。</div>';
+      renderDBTable(pf); renderAtlasNeighbors(pf, iv); renderIV2D(iv, pf); renderIV3D(iv, pf); renderForteOrbitMap(pf, iv);
+    }
+
+    document.getElementById('analyzeBtn').addEventListener('click', renderApp);
+    document.getElementById('playChordBtn').addEventListener('click', async () => { await playPitchClassChord(); });
+    document.getElementById('playArpeggioBtn').addEventListener('click', async () => { await playPitchClassArpeggio(); });
+    document.getElementById('stopAudioBtn').addEventListener('click', () => { if (audioCtx) stopAudio(); });
+    document.getElementById('clearBtn').addEventListener('click', () => { document.getElementById('pcInput').value = ''; if (audioCtx) stopAudio(); renderApp(); });
+    document.getElementById('resetBtn').addEventListener('click', () => { document.getElementById('pcInput').value = '0 1 4 7'; if (audioCtx) stopAudio(); renderApp(); });
+    document.querySelectorAll('[data-preset]').forEach((btn) => btn.addEventListener('click', () => { document.getElementById('pcInput').value = btn.getAttribute('data-preset'); renderApp(); }));
+    document.getElementById('pcInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') renderApp(); });
+    document.getElementById('forteSearch').addEventListener('input', () => renderApp());
+
+    currentDB = buildForteDatabase();
+    initMIDI();
+    renderApp();
+  </script>
+</body>
+</html>
